@@ -17,7 +17,6 @@ class RegistrationTest extends TestCase
             'email' => 'Pat@Example.com',
             'phone' => '(555) 555-0123',
             'street' => '123 Maple Street',
-            'unit' => '',
             'city' => 'Springfield',
             'state' => 'oh',
             'postal_code' => '45501',
@@ -34,6 +33,26 @@ class RegistrationTest extends TestCase
             ->assertSee('name="street"', false);
     }
 
+    public function test_address_is_prefilled_with_the_default_location(): void
+    {
+        $this->get('/')
+            ->assertSee('value="Cleveland"', false)
+            ->assertSee('value="TN"', false)
+            ->assertSee('value="37312"', false)
+            ->assertDontSee('name="unit"', false);
+    }
+
+    public function test_visitor_input_replaces_the_default_location_after_a_validation_error(): void
+    {
+        $this->from('/')
+            ->post(route('registrations.store'), $this->validData(['email' => 'not-an-email']))
+            ->assertRedirect('/');
+
+        $this->get('/')
+            ->assertSee('value="Springfield"', false)
+            ->assertDontSee('value="Cleveland"', false);
+    }
+
     public function test_registration_is_logged_as_info(): void
     {
         Log::spy();
@@ -47,7 +66,6 @@ class RegistrationTest extends TestCase
             'email' => 'pat@example.com',
             'phone' => '(555) 555-0123',
             'street' => '123 Maple Street',
-            'unit' => null,
             'city' => 'Springfield',
             'state' => 'OH',
             'postal_code' => '45501',
@@ -69,8 +87,7 @@ class RegistrationTest extends TestCase
         $this->from('/')
             ->post(route('registrations.store'), [])
             ->assertRedirect('/')
-            ->assertSessionHasErrors(['name', 'email', 'phone', 'street', 'city', 'state', 'postal_code'])
-            ->assertSessionDoesntHaveErrors(['unit']);
+            ->assertSessionHasErrors(['name', 'email', 'phone', 'street', 'city', 'state', 'postal_code']);
 
         Log::shouldNotHaveReceived('info');
     }

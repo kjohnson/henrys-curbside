@@ -64,12 +64,11 @@
                                 <legend class="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-700">Service address</legend>
 
                                 <x-field name="street" label="Street address" autocomplete="address-line1" />
-                                <x-field name="unit" label="Apt, unit, or suite" autocomplete="address-line2" optional />
 
                                 <div class="grid gap-5 sm:grid-cols-6">
-                                    <x-field name="city" label="City" autocomplete="address-level2" class="sm:col-span-3" />
-                                    <x-field name="state" label="State" autocomplete="address-level1" maxlength="2" placeholder="OH" class="sm:col-span-1" />
-                                    <x-field name="postal_code" label="ZIP code" autocomplete="postal-code" inputmode="numeric" class="sm:col-span-2" />
+                                    <x-field name="city" label="City" :value="config('site.default_location.city')" autocomplete="address-level2" class="sm:col-span-3" />
+                                    <x-field name="state" label="State" :value="config('site.default_location.state')" autocomplete="address-level1" maxlength="2" class="sm:col-span-1" />
+                                    <x-field name="postal_code" label="ZIP code" :value="config('site.default_location.postal_code')" autocomplete="postal-code" inputmode="numeric" class="sm:col-span-2" />
                                 </div>
                             </fieldset>
 

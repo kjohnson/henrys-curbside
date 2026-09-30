@@ -1,4 +1,4 @@
-@props(['name', 'label', 'type' => 'text', 'optional' => false])
+@props(['name', 'label', 'type' => 'text', 'value' => null, 'optional' => false])
 
 <div {{ $attributes->only('class') }}>
     <label for="{{ $name }}" class="block text-sm font-semibold text-brand-900">
@@ -11,7 +11,7 @@
         id="{{ $name }}"
         name="{{ $name }}"
         type="{{ $type }}"
-        value="{{ old($name) }}"
+        value="{{ old($name, $value) }}"
         @unless ($optional) required @endunless
         @error($name) aria-invalid="true" aria-describedby="{{ $name }}-error" @enderror
         {{ $attributes->except('class')->class([

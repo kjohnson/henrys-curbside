@@ -38,7 +38,6 @@ class StoreRegistrationRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:32', 'regex:/^[0-9\s().+-]{7,}$/'],
             'street' => ['required', 'string', 'max:255'],
-            'unit' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'state' => ['required', 'string', 'size:2', 'alpha'],
             'postal_code' => ['required', 'string', 'regex:/^\d{5}(-\d{4})?$/'],
