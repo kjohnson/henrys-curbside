@@ -17,11 +17,14 @@
         {{-- Right column: scrolls with the page. --}}
         <main class="flex min-h-dvh flex-col bg-mist/40 lg:ml-[50%]">
             <div class="mx-auto w-full max-w-xl flex-1 px-6 py-12 sm:px-10 lg:py-20">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Coming soon</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl">{{ config('site.headline') }}</h1>
-                <p class="mt-5 text-lg leading-relaxed text-brand-950/75">{{ config('site.intro') }}</p>
+                {{-- On stacked (mobile) layouts, hide the intro after registering so the confirmation is in view. --}}
+                <header @class(['mb-10', 'hidden lg:block' => session('registered')])>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Coming soon</p>
+                    <h1 class="mt-3 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl">{{ config('site.headline') }}</h1>
+                    <p class="mt-5 text-lg leading-relaxed text-brand-950/75">{{ config('site.intro') }}</p>
+                </header>
 
-                <section id="register" class="mt-10 rounded-2xl border border-brand-950/10 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="register-heading">
+                <section id="register" class="rounded-2xl border border-brand-950/10 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="register-heading">
                     @if (session('registered'))
                         <div class="py-6 text-center" role="status">
                             <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-100">

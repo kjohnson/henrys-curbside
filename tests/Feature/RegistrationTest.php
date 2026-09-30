@@ -92,6 +92,15 @@ class RegistrationTest extends TestCase
             ->assertDontSee('Count me in');
     }
 
+    public function test_intro_is_hidden_on_mobile_only_after_registering(): void
+    {
+        $this->get('/')->assertSee('<header class="mb-10">', false);
+
+        $this->withSession(['registered' => true])
+            ->get('/')
+            ->assertSee('<header class="mb-10 hidden lg:block">', false);
+    }
+
     public function test_required_fields_are_validated(): void
     {
         Log::spy();
