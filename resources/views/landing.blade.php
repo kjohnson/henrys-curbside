@@ -2,13 +2,11 @@
     <div>
         {{-- Left column: brand graphic, pinned in place on large screens. --}}
         <aside class="relative flex flex-col items-center justify-center overflow-hidden bg-brand-900 px-6 py-12 text-mist lg:fixed lg:inset-y-0 lg:left-0 lg:w-1/2 lg:py-16">
-            <div class="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(var(--color-mist)_1.5px,transparent_1.5px)] [background-size:22px_22px]" aria-hidden="true"></div>
-
             <div class="relative flex flex-col items-center text-center">
                 @if (config('site.logo'))
-                    <img src="{{ asset(config('site.logo')) }}" alt="{{ config('site.name') }}" class="w-48 sm:w-64 lg:w-[min(26rem,60vh)]">
+                    <img src="{{ asset(config('site.logo')) }}" alt="{{ config('site.name') }}" class="w-40 sm:w-52 lg:w-[min(20rem,50vh)]">
                 @else
-                    <x-logo class="w-48 drop-shadow-2xl sm:w-64 lg:w-[min(26rem,60vh)]" />
+                    <x-logo class="w-40 sm:w-52 lg:w-[min(20rem,50vh)]" />
                 @endif
 
                 <p class="mt-8 text-2xl font-semibold tracking-tight sm:text-3xl">{{ config('site.tagline') }}</p>
