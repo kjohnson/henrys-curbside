@@ -20,7 +20,8 @@
         {{-- Bin, tipped back onto its wheel as if being rolled --}}
         <g transform="rotate(-8 102 126)">
             <polygon class="fill-mist stroke-mist" points="94,56 146,56 140,122 100,122" stroke-width="10" stroke-linejoin="round" mask="url(#logo-wheel-gap)" />
-            <rect class="fill-accent" x="86" y="34" width="68" height="10" rx="5" transform="rotate(-7 154 44)" />
+            {{-- Lid floats clear of the body: at least 4 units apart at its closest (left) end. --}}
+            <rect class="fill-accent" x="86" y="29.6" width="68" height="10" rx="5" transform="rotate(-7 154 39.6)" />
             <circle class="fill-accent" cx="102" cy="126" r="13" />
         </g>
     </g>
