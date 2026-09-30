@@ -14,7 +14,11 @@
             </div>
         </aside>
 
-        {{-- Right column: scrolls with the page. --}}
+        {{-- Map texture pinned behind the right column; a fixed layer rather than
+             background-attachment: fixed, which iOS Safari ignores. --}}
+        <div class="pointer-events-none fixed inset-0 -z-10 bg-map lg:left-1/2" aria-hidden="true"></div>
+
+        {{-- Right column: scrolls with the page, over the pinned map. --}}
         <main class="flex min-h-dvh flex-col bg-mist/40 lg:ml-[50%]">
             <div class="mx-auto w-full max-w-xl flex-1 px-6 py-12 sm:px-10 lg:py-20">
                 {{-- On stacked (mobile) layouts, hide the intro after registering so the confirmation is in view. --}}

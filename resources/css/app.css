@@ -15,3 +15,9 @@
     --color-accent: #ffc220;
     --color-accent-dark: #f2a900;
 }
+
+/* Light street-map texture for the form column. */
+@utility bg-map {
+    background-image: url('../images/map-pattern.svg');
+    background-size: 720px 720px;
+}

@@ -1,0 +1,86 @@
+<!--
+    Seamless street-map tile (720×720) used as a subtle background texture.
+    Lines that cross an edge re-enter at the matching point on the opposite edge;
+    curved roads meet the edges straight on so the join is invisible.
+    Districts (dense downtown, angled grid, curving suburb, river, park) keep the
+    repeat from reading as a plain grid.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <defs>
+        <!-- Irregular neighbourhood outline for the angled grid -->
+        <clipPath id="angled-district">
+            <path d="M505 235L640 228L705 290L700 410L610 452L520 430L482 350Z" />
+        </clipPath>
+    </defs>
+
+    <!-- Overall strength of the texture; lower is fainter. -->
+    <g opacity="0.5">
+        <!-- Base grid: sparse, irregular, and continuous across tiles -->
+        <g stroke="#e3e7ec" stroke-width="1">
+            <path d="M0 40H720M0 225H720M0 400H720M0 505H720" />
+            <path d="M60 0V720M250 0V720M385 0V720M640 0V720" />
+        </g>
+
+        <!-- Downtown: a dense block of short streets -->
+        <g stroke="#e8ebef" stroke-width="0.75">
+            <path d="M60 72H250M60 104H250M60 136H200M100 168H250M60 196H250" />
+            <path d="M92 40V225M124 40V168M156 72V225M188 40V196M220 104V225" />
+        </g>
+
+        <!-- Angled district: a rotated grid clipped to an irregular outline -->
+        <g clip-path="url(#angled-district)">
+            <g stroke="#e6e9ee" stroke-width="0.9" transform="rotate(22 595 340)">
+                <path d="M430 190H770M430 218H770M430 246H770M430 274H770M430 302H770M430 330H770M430 358H770M430 386H770M430 414H770M430 442H770M430 470H770M430 498H770" />
+                <path d="M430 170V520M464 170V520M498 170V520M532 170V520M566 170V520M600 170V520M634 170V520M668 170V520M702 170V520M736 170V520M770 170V520" />
+            </g>
+        </g>
+        <path d="M505 235L640 228L705 290L700 410L610 452L520 430L482 350Z" stroke="#e3e7ec" stroke-width="1" />
+
+        <!-- Suburb: curving residential streets with cul-de-sacs -->
+        <g stroke="#e6e9ee" stroke-width="1">
+            <path d="M70 440Q170 410 300 445" />
+            <path d="M70 470Q175 445 300 480" />
+            <path d="M80 555Q180 525 300 560" />
+            <path d="M80 590Q170 570 270 598" />
+            <path d="M130 431L118 418M215 454L230 425M150 540L140 525M235 548L248 525M190 582L196 612" />
+        </g>
+        <g stroke="#e6e9ee" stroke-width="1" fill="#fbfcfd">
+            <circle cx="115" cy="414" r="5" />
+            <circle cx="232" cy="420" r="5" />
+            <circle cx="137" cy="520" r="5" />
+            <circle cx="251" cy="520" r="5" />
+            <circle cx="197" cy="617" r="5" />
+        </g>
+
+        <!-- River: two banks, continuous across tiles -->
+        <g stroke="#dde2e8" stroke-width="1.25">
+            <path d="M0 640C100 640 160 690 280 675S470 610 560 628S690 640 720 640" />
+            <path d="M0 654C100 654 160 704 280 689S470 624 560 642S690 654 720 654" />
+        </g>
+
+        <!-- Park: dashed boundary and footpath -->
+        <g stroke="#e3e7ec" stroke-width="1" stroke-dasharray="3 4">
+            <path d="M520 525C560 500 625 508 628 545S610 610 565 600S495 560 520 525Z" />
+            <path d="M530 548C555 535 580 572 615 556" />
+        </g>
+
+        <!-- Secondary road: opposite diagonal, wrapped across the edges -->
+        <path d="M0 560L560 0M560 720L720 560" stroke="#e3e7ec" stroke-width="1.75" />
+
+        <!-- Main roads -->
+        <g stroke="#e0e4e9" stroke-width="2.5">
+            <!-- Winding east–west road (horizontal tangents at both edges) -->
+            <path d="M0 150C120 150 170 80 280 95S450 210 560 180S680 150 720 150" />
+            <!-- Curving north–south road (vertical tangents at both edges) -->
+            <path d="M470 0C470 110 540 170 520 290S430 470 465 560S470 690 470 720" />
+            <!-- Diagonal avenue, wrapped across the edges -->
+            <path d="M0 300L420 720M420 0L720 300" />
+        </g>
+
+        <!-- Roundabouts -->
+        <g stroke="#e0e4e9" stroke-width="2" fill="#fbfcfd">
+            <circle cx="250" cy="225" r="12" />
+            <circle cx="385" cy="505" r="10" />
+        </g>
+    </g>
+</svg>
