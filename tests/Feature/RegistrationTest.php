@@ -106,6 +106,28 @@ class RegistrationTest extends TestCase
         Log::shouldNotHaveReceived('info');
     }
 
+    public function test_phone_numbers_are_normalized_to_us_format(): void
+    {
+        Log::spy();
+
+        foreach (['423.555.0123', '4235550123', '+1 (423) 555-0123', '1-423-555-0123'] as $phone) {
+            $this->post(route('registrations.store'), $this->validData(['phone' => $phone]))
+                ->assertSessionHasNoErrors();
+        }
+
+        Log::shouldHaveReceived('info')->times(4)->withArgs(
+            fn (string $message, array $context) => $context['phone'] === '(423) 555-0123'
+        );
+    }
+
+    public function test_phone_numbers_must_be_valid_ten_digit_us_numbers(): void
+    {
+        foreach (['555-0123', '(423) 555-01234', '+44 20 7946 0958', '(123) 555-0123', '(423) 055-0123'] as $phone) {
+            $this->post(route('registrations.store'), $this->validData(['phone' => $phone]))
+                ->assertSessionHasErrors(['phone' => 'Please enter a valid 10-digit US phone number.']);
+        }
+    }
+
     public function test_honeypot_submissions_are_not_logged(): void
     {
         Log::spy();

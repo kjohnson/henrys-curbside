@@ -55,10 +55,8 @@
 
                             <x-field name="name" label="Full name" autocomplete="name" />
 
-                            <div class="grid gap-5 sm:grid-cols-2">
-                                <x-field name="email" label="Email" type="email" autocomplete="email" inputmode="email" />
-                                <x-field name="phone" label="Phone number" type="tel" autocomplete="tel" inputmode="tel" placeholder="(555) 555-0123" />
-                            </div>
+                            <x-field name="email" label="Email" type="email" autocomplete="email" inputmode="email" />
+                            <x-field name="phone" label="Phone number" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="(555) 555-0123" data-mask="us-phone" />
 
                             <fieldset class="space-y-5">
                                 <legend class="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-700">Service address</legend>
