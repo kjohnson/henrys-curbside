@@ -23,12 +23,6 @@ return [
 
     'intro' => env('SITE_INTRO', 'We roll your trash cans out to the curb before pickup and bring them back when the truck has gone. We are launching soon in the neighborhood — register your interest and we will reach out when a route opens on your street.'),
 
-    'steps' => [
-        ['title' => 'Register', 'body' => 'Tell us who you are and where your cans live.'],
-        ['title' => 'We schedule', 'body' => 'We match your address to your local pickup day.'],
-        ['title' => 'Out & back', 'body' => 'Cans go out the night before and come back after pickup.'],
-    ],
-
     'service_area' => env('SITE_SERVICE_AREA', 'Serving Cleveland, Tennessee'),
 
     // Pre-filled into the address fields; visitors can still change them.

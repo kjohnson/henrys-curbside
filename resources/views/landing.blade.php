@@ -21,17 +21,7 @@
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl">{{ config('site.headline') }}</h1>
                 <p class="mt-5 text-lg leading-relaxed text-brand-950/75">{{ config('site.intro') }}</p>
 
-                <ol class="mt-10 grid gap-4 sm:grid-cols-3">
-                    @foreach (config('site.steps') as $step)
-                        <li class="rounded-xl border border-brand-950/10 bg-white p-4">
-                            <span class="flex size-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-brand-950">{{ $loop->iteration }}</span>
-                            <p class="mt-3 font-semibold text-brand-900">{{ $step['title'] }}</p>
-                            <p class="mt-1 text-sm leading-snug text-brand-950/65">{{ $step['body'] }}</p>
-                        </li>
-                    @endforeach
-                </ol>
-
-                <section id="register" class="mt-12 rounded-2xl border border-brand-950/10 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="register-heading">
+                <section id="register" class="mt-10 rounded-2xl border border-brand-950/10 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="register-heading">
                     @if (session('registered'))
                         <div class="py-6 text-center" role="status">
                             <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-100">
