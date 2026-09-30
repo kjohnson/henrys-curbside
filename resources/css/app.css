@@ -7,11 +7,11 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --color-brand-950: #0f2a20;
-    --color-brand-900: #1d4d3b;
-    --color-brand-700: #2e6b53;
-    --color-brand-100: #e3ede7;
-    --color-cream: #f6f1e3;
-    --color-accent: #f4b41a;
-    --color-accent-dark: #c98f00;
+    --color-brand-950: #041f41;
+    --color-brand-900: #0053a6;
+    --color-brand-700: #0071ce;
+    --color-brand-100: #e1eefb;
+    --color-mist: #f4f7fb;
+    --color-accent: #ffc220;
+    --color-accent-dark: #f2a900;
 }

@@ -1,8 +1,8 @@
 <x-layouts.app>
     <div>
         {{-- Left column: brand graphic, pinned in place on large screens. --}}
-        <aside class="relative flex flex-col items-center justify-center overflow-hidden bg-brand-900 px-6 py-12 text-cream lg:fixed lg:inset-y-0 lg:left-0 lg:w-1/2 lg:py-16">
-            <div class="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(var(--color-cream)_1.5px,transparent_1.5px)] [background-size:22px_22px]" aria-hidden="true"></div>
+        <aside class="relative flex flex-col items-center justify-center overflow-hidden bg-brand-900 px-6 py-12 text-mist lg:fixed lg:inset-y-0 lg:left-0 lg:w-1/2 lg:py-16">
+            <div class="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(var(--color-mist)_1.5px,transparent_1.5px)] [background-size:22px_22px]" aria-hidden="true"></div>
 
             <div class="relative flex flex-col items-center text-center">
                 @if (config('site.logo'))
@@ -17,7 +17,7 @@
         </aside>
 
         {{-- Right column: scrolls with the page. --}}
-        <main class="flex min-h-dvh flex-col bg-cream/40 lg:ml-[50%]">
+        <main class="flex min-h-dvh flex-col bg-mist/40 lg:ml-[50%]">
             <div class="mx-auto w-full max-w-xl flex-1 px-6 py-12 sm:px-10 lg:py-20">
                 <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Coming soon</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl">{{ config('site.headline') }}</h1>
