@@ -33,6 +33,18 @@ class RegistrationTest extends TestCase
             ->assertSee('name="street"', false);
     }
 
+    public function test_landing_page_links_the_favicons(): void
+    {
+        $this->get('/')
+            ->assertSee('href="'.asset('favicon.ico').'"', false)
+            ->assertSee('href="'.asset('favicon.svg').'"', false)
+            ->assertSee('href="'.asset('apple-touch-icon.png').'"', false);
+
+        foreach (['favicon.ico', 'favicon.svg', 'apple-touch-icon.png'] as $icon) {
+            $this->assertFileExists(public_path($icon));
+        }
+    }
+
     public function test_address_is_prefilled_with_the_default_location(): void
     {
         $this->get('/')
