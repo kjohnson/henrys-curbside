@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\Registration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * @return array<string, string>
      */
@@ -17,7 +14,7 @@ class RegistrationTest extends TestCase
     {
         return array_merge([
             'name' => 'Pat Neighbor',
-            'email' => 'pat@example.com',
+            'email' => 'Pat@Example.com',
             'phone' => '(555) 555-0123',
             'street' => '123 Maple Street',
             'unit' => '',
@@ -37,19 +34,24 @@ class RegistrationTest extends TestCase
             ->assertSee('name="street"', false);
     }
 
-    public function test_visitor_can_register_interest(): void
+    public function test_registration_is_logged_as_info(): void
     {
+        Log::spy();
+
         $this->post(route('registrations.store'), $this->validData())
             ->assertRedirect(route('home'))
             ->assertSessionHas('registered', true);
 
-        $this->assertDatabaseHas('registrations', [
+        Log::shouldHaveReceived('info')->once()->with('Registration received', [
+            'name' => 'Pat Neighbor',
             'email' => 'pat@example.com',
-            'state' => 'OH',
+            'phone' => '(555) 555-0123',
+            'street' => '123 Maple Street',
             'unit' => null,
+            'city' => 'Springfield',
+            'state' => 'OH',
+            'postal_code' => '45501',
         ]);
-
-        $this->followingRedirects()->get(route('home'))->assertOk();
     }
 
     public function test_thank_you_message_is_shown_after_registering(): void
@@ -62,43 +64,39 @@ class RegistrationTest extends TestCase
 
     public function test_required_fields_are_validated(): void
     {
+        Log::spy();
+
         $this->from('/')
             ->post(route('registrations.store'), [])
             ->assertRedirect('/')
             ->assertSessionHasErrors(['name', 'email', 'phone', 'street', 'city', 'state', 'postal_code'])
             ->assertSessionDoesntHaveErrors(['unit']);
 
-        $this->assertDatabaseCount('registrations', 0);
+        Log::shouldNotHaveReceived('info');
     }
 
     public function test_invalid_formats_are_rejected(): void
     {
+        Log::spy();
+
         $this->post(route('registrations.store'), $this->validData([
             'email' => 'not-an-email',
             'phone' => 'call me',
             'state' => 'Ohio',
             'postal_code' => '4550',
         ]))->assertSessionHasErrors(['email', 'phone', 'state', 'postal_code']);
+
+        Log::shouldNotHaveReceived('info');
     }
 
-    public function test_registering_twice_updates_the_existing_record(): void
+    public function test_honeypot_submissions_are_not_logged(): void
     {
-        $this->post(route('registrations.store'), $this->validData());
-        $this->post(route('registrations.store'), $this->validData([
-            'email' => 'PAT@example.com',
-            'street' => '456 Oak Avenue',
-        ]))->assertSessionHasNoErrors();
+        Log::spy();
 
-        $this->assertDatabaseCount('registrations', 1);
-        $this->assertSame('456 Oak Avenue', Registration::first()->street);
-    }
-
-    public function test_honeypot_submissions_are_discarded(): void
-    {
         $this->post(route('registrations.store'), $this->validData(['company' => 'Spam Co']))
             ->assertRedirect(route('home'))
             ->assertSessionHas('registered', true);
 
-        $this->assertDatabaseCount('registrations', 0);
+        Log::shouldNotHaveReceived('info');
     }
 }
