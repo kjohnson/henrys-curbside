@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRegistrationRequest;
+use App\Models\AvailabilityCheck;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 class RegistrationController extends Controller
@@ -18,7 +20,8 @@ class RegistrationController extends Controller
     }
 
     /**
-     * Record a new registration of interest.
+     * Record a new availability check, then ask for contact details on a second step
+     * reached through a signed link that only this visitor holds, valid for an hour.
      */
     public function store(StoreRegistrationRequest $request): RedirectResponse
     {
@@ -27,8 +30,10 @@ class RegistrationController extends Controller
             return to_route('home')->with('registered', true);
         }
 
-        Log::info('Registration received', $request->validated());
+        $check = AvailabilityCheck::create($request->validated());
 
-        return to_route('home')->with('registered', true);
+        Log::info('Availability check received', ['id' => $check->id]);
+
+        return redirect(URL::temporarySignedRoute('availability-checks.contact.edit', now()->addHour(), $check));
     }
 }

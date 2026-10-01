@@ -7,6 +7,10 @@
 
         <title>{{ $title ?? config('site.name') }}</title>
 
+        {{-- Lets CSS hide JavaScript-driven content (e.g. the rest of the address until the first
+             line is typed) only when the script will be there to reveal it. --}}
+        <script>document.documentElement.classList.add('js')</script>
+
         <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="32x32">
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">

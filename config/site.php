@@ -25,11 +25,10 @@ return [
 
     'service_area' => env('SITE_SERVICE_AREA', 'Serving Cleveland, Tennessee'),
 
-    // Pre-filled into the address fields; visitors can still change them.
-    'default_location' => [
-        'city' => env('SITE_DEFAULT_CITY', 'Cleveland'),
-        'state' => env('SITE_DEFAULT_STATE', 'TN'),
-        'postal_code' => env('SITE_DEFAULT_POSTAL_CODE', '37312'),
+    // The service area's city and state, pre-filled on the form (visitors can change them).
+    'service_location' => [
+        'city' => env('SITE_SERVICE_CITY', 'Cleveland'),
+        'state' => env('SITE_SERVICE_STATE', 'TN'),
     ],
 
     'contact_email' => env('SITE_CONTACT_EMAIL', 'hello@example.com'),

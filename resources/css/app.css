@@ -152,6 +152,11 @@
     }
 }
 
+/* The rest of the address waits until the first line is typed (resources/js/address-reveal.js). */
+.js .address-details:not(.is-revealed) {
+    display: none;
+}
+
 /* No entrance after a successful registration: the logo starts at rest. */
 [data-logo-intro='skip'] :is(.logo-roll-in, .logo-rock, .logo-lid, .logo-motion-line) {
     animation: none;

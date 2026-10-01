@@ -2,9 +2,15 @@
 
 namespace App\Http\Requests;
 
+use App\Support\UsStates;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
+/**
+ * The first step: name and service address. Email and phone are asked for afterwards
+ * (UpdateContactRequest).
+ */
 class StoreRegistrationRequest extends FormRequest
 {
     /**
@@ -21,29 +27,8 @@ class StoreRegistrationRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'email' => strtolower(trim((string) $this->input('email'))),
-            'phone' => $this->formatPhone((string) $this->input('phone')),
             'state' => strtoupper(trim((string) $this->input('state'))),
         ]);
-    }
-
-    /**
-     * Normalize a US number to "(423) 555-0123", dropping a leading country code.
-     * Anything that isn't 10 digits is returned untouched so validation reports it.
-     */
-    private function formatPhone(string $phone): string
-    {
-        $digits = preg_replace('/\D/', '', $phone);
-
-        if (strlen($digits) === 11 && str_starts_with($digits, '1')) {
-            $digits = substr($digits, 1);
-        }
-
-        if (strlen($digits) !== 10) {
-            return trim($phone);
-        }
-
-        return sprintf('(%s) %s-%s', substr($digits, 0, 3), substr($digits, 3, 3), substr($digits, 6));
     }
 
     /**
@@ -55,12 +40,11 @@ class StoreRegistrationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'regex:/^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/'],
             'street' => ['required', 'string', 'max:255'],
+            'unit' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
-            'state' => ['required', 'string', 'size:2', 'alpha'],
-            'postal_code' => ['required', 'string', 'regex:/^\d{5}(-\d{4})?$/'],
+            'state' => ['required', Rule::in(array_keys(UsStates::ALL))],
+            'postal_code' => ['nullable', 'string', 'regex:/^\d{5}(-\d{4})?$/'],
         ];
     }
 
@@ -72,9 +56,7 @@ class StoreRegistrationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.regex' => 'Please enter a valid 10-digit US phone number.',
-            'state.size' => 'Please use the two-letter state abbreviation.',
-            'state.alpha' => 'Please use the two-letter state abbreviation.',
+            'state.in' => 'Please choose a state.',
             'postal_code.regex' => 'Please enter a valid ZIP code.',
         ];
     }
@@ -87,7 +69,8 @@ class StoreRegistrationRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'street' => 'street address',
+            'street' => 'service address',
+            'unit' => 'apartment or unit number',
             'postal_code' => 'ZIP code',
         ];
     }

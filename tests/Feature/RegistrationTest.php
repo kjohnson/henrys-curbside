@@ -2,11 +2,21 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Log;
+use App\Models\AvailabilityCheck;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['site.service_location' => ['city' => 'Cleveland', 'state' => 'TN']]);
+    }
+
     /**
      * @return array<string, string>
      */
@@ -14,12 +24,11 @@ class RegistrationTest extends TestCase
     {
         return array_merge([
             'name' => 'Pat Neighbor',
-            'email' => 'Pat@Example.com',
-            'phone' => '(555) 555-0123',
             'street' => '123 Maple Street',
-            'city' => 'Springfield',
-            'state' => 'oh',
-            'postal_code' => '45501',
+            'unit' => '',
+            'city' => 'Cleveland',
+            'state' => 'TN',
+            'postal_code' => '',
         ], $overrides);
     }
 
@@ -28,16 +37,30 @@ class RegistrationTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('Register your interest')
-            ->assertSee('name="email"', false)
-            ->assertSee('name="phone"', false)
-            ->assertSee('name="street"', false);
+            ->assertSee('name="name"', false)
+            ->assertSee('name="street"', false)
+            ->assertDontSee('name="email"', false)
+            ->assertDontSee('name="phone"', false);
     }
 
-    public function test_footer_truck_waits_to_drive_until_visible(): void
+    public function test_footer_truck_only_appears_on_the_final_thank_you_page(): void
     {
-        $this->get('/')
-            ->assertSee('data-drive-when-visible', false)
-            ->assertDontSee('is-driving', false);
+        $this->get('/')->assertDontSee('data-drive-when-visible', false);
+
+        foreach ([false, true] as $contactSaved) {
+            $this->withSession(['registered' => true, 'contact_saved' => $contactSaved])
+                ->get('/')
+                ->assertSee('data-drive-when-visible', false)
+                ->assertDontSee('is-driving', false);
+        }
+    }
+
+    public function test_thank_you_page_says_we_will_let_you_know_when_contact_details_were_left(): void
+    {
+        $this->withSession(['registered' => true, 'contact_saved' => true])
+            ->get('/')
+            ->assertSee("We'll let you know!", false)
+            ->assertDontSee("You're on the list!", false);
     }
 
     public function test_logo_entrance_is_skipped_after_registering(): void
@@ -68,43 +91,70 @@ class RegistrationTest extends TestCase
         }
     }
 
-    public function test_address_is_prefilled_with_the_default_location(): void
+    public function test_address_starts_with_the_first_line(): void
     {
         $this->get('/')
+            ->assertSee('<label for="street" class="block text-sm font-semibold text-brand-900">Service address</label>', false)
+            ->assertSeeInOrder(['name="street"', 'name="unit"', 'name="city"', 'name="state"', 'name="postal_code"'], false)
+            ->assertSee('class="address-details space-y-5"', false)
             ->assertSee('value="Cleveland"', false)
-            ->assertSee('value="TN"', false)
-            ->assertSee('value="37312"', false)
-            ->assertDontSee('name="unit"', false);
+            ->assertSee('<option value="TN" selected>TN</option>', false)
+            ->assertDontSee('<legend', false);
     }
 
-    public function test_visitor_input_replaces_the_default_location_after_a_validation_error(): void
+    public function test_state_is_a_dropdown_of_every_state(): void
+    {
+        $html = $this->get('/')->getContent();
+
+        $this->assertMatchesRegularExpression('/<select\s[^>]*name="state"/', $html);
+        $this->assertSame(51, preg_match_all('/<option value="([A-Z]{2})"[^>]*>\1<\/option>/', $html));
+    }
+
+    public function test_address_fields_stay_visible_after_a_validation_error(): void
     {
         $this->from('/')
-            ->post(route('registrations.store'), $this->validData(['email' => 'not-an-email']))
+            ->post(route('registrations.store'), $this->validData(['postal_code' => '3731']))
             ->assertRedirect('/');
 
         $this->get('/')
-            ->assertSee('value="Springfield"', false)
-            ->assertDontSee('value="Cleveland"', false);
+            ->assertSee('class="address-details space-y-5 is-revealed"', false)
+            ->assertSee('value="123 Maple Street"', false);
     }
 
-    public function test_registration_is_logged_as_info(): void
+    public function test_a_submission_is_saved_and_asks_for_contact_details_via_a_signed_link(): void
     {
-        Log::spy();
+        $response = $this->post(route('registrations.store'), $this->validData(['unit' => 'Apt 2', 'postal_code' => '37311']))
+            ->assertSessionHasNoErrors();
 
-        $this->post(route('registrations.store'), $this->validData())
-            ->assertRedirect(route('home'))
-            ->assertSessionHas('registered', true);
+        $check = AvailabilityCheck::sole();
 
-        Log::shouldHaveReceived('info')->once()->with('Registration received', [
+        // Sent to the signed contact-details step, valid for an hour.
+        $location = $response->assertRedirect()->headers->get('Location');
+        $this->assertStringStartsWith(route('availability-checks.contact.edit', $check), $location);
+        parse_str(parse_url($location, PHP_URL_QUERY), $query);
+        $this->assertArrayHasKey('signature', $query);
+        $this->assertEqualsWithDelta(now()->addHour()->timestamp, (int) $query['expires'], 5);
+
+        $this->assertDatabaseHas('availability_checks', [
+            'id' => $check->id,
             'name' => 'Pat Neighbor',
-            'email' => 'pat@example.com',
-            'phone' => '(555) 555-0123',
+            'email' => null,
+            'phone' => null,
             'street' => '123 Maple Street',
-            'city' => 'Springfield',
-            'state' => 'OH',
-            'postal_code' => '45501',
+            'unit' => 'Apt 2',
+            'city' => 'Cleveland',
+            'state' => 'TN',
+            'postal_code' => '37311',
         ]);
+    }
+
+    public function test_addresses_anywhere_are_accepted(): void
+    {
+        $this->post(route('registrations.store'), $this->validData(['city' => 'Chattanooga', 'state' => 'TN']))
+            ->assertSessionHasNoErrors();
+
+        $check = AvailabilityCheck::sole();
+        $this->assertSame(['Chattanooga', 'TN'], [$check->city, $check->state]);
     }
 
     public function test_thank_you_message_is_shown_after_registering(): void
@@ -126,60 +176,49 @@ class RegistrationTest extends TestCase
 
     public function test_required_fields_are_validated(): void
     {
-        Log::spy();
-
         $this->from('/')
             ->post(route('registrations.store'), [])
             ->assertRedirect('/')
-            ->assertSessionHasErrors(['name', 'email', 'phone', 'street', 'city', 'state', 'postal_code']);
+            ->assertSessionHasErrors(['name', 'street', 'city', 'state'])
+            ->assertSessionDoesntHaveErrors(['unit', 'postal_code']);
 
-        Log::shouldNotHaveReceived('info');
+        $this->assertDatabaseCount('availability_checks', 0);
     }
 
-    public function test_invalid_formats_are_rejected(): void
+    public function test_required_message_uses_the_field_label(): void
     {
-        Log::spy();
-
-        $this->post(route('registrations.store'), $this->validData([
-            'email' => 'not-an-email',
-            'phone' => 'call me',
-            'state' => 'Ohio',
-            'postal_code' => '4550',
-        ]))->assertSessionHasErrors(['email', 'phone', 'state', 'postal_code']);
-
-        Log::shouldNotHaveReceived('info');
+        $this->post(route('registrations.store'), $this->validData(['street' => '']))
+            ->assertSessionHasErrors(['street' => 'The service address field is required.']);
     }
 
-    public function test_phone_numbers_are_normalized_to_us_format(): void
+    public function test_state_must_be_a_us_state(): void
     {
-        Log::spy();
-
-        foreach (['423.555.0123', '4235550123', '+1 (423) 555-0123', '1-423-555-0123'] as $phone) {
-            $this->post(route('registrations.store'), $this->validData(['phone' => $phone]))
-                ->assertSessionHasNoErrors();
-        }
-
-        Log::shouldHaveReceived('info')->times(4)->withArgs(
-            fn (string $message, array $context) => $context['phone'] === '(423) 555-0123'
-        );
+        $this->post(route('registrations.store'), $this->validData(['state' => 'XX']))
+            ->assertSessionHasErrors(['state' => 'Please choose a state.']);
     }
 
-    public function test_phone_numbers_must_be_valid_ten_digit_us_numbers(): void
+    public function test_fields_are_not_labelled_required_or_optional(): void
     {
-        foreach (['555-0123', '(423) 555-01234', '+44 20 7946 0958', '(123) 555-0123', '(423) 055-0123'] as $phone) {
-            $this->post(route('registrations.store'), $this->validData(['phone' => $phone]))
-                ->assertSessionHasErrors(['phone' => 'Please enter a valid 10-digit US phone number.']);
-        }
+        $this->get('/')
+            ->assertDontSee('(optional)')
+            ->assertDontSee('(required)')
+            ->assertDontSee('*</label>', false);
     }
 
-    public function test_honeypot_submissions_are_not_logged(): void
+    public function test_zip_codes_must_be_valid(): void
     {
-        Log::spy();
+        $this->post(route('registrations.store'), $this->validData(['postal_code' => '3731']))
+            ->assertSessionHasErrors(['postal_code' => 'Please enter a valid ZIP code.']);
 
+        $this->assertDatabaseCount('availability_checks', 0);
+    }
+
+    public function test_honeypot_submissions_are_not_saved(): void
+    {
         $this->post(route('registrations.store'), $this->validData(['company' => 'Spam Co']))
             ->assertRedirect(route('home'))
             ->assertSessionHas('registered', true);
 
-        Log::shouldNotHaveReceived('info');
+        $this->assertDatabaseCount('availability_checks', 0);
     }
 }
