@@ -152,6 +152,11 @@
     }
 }
 
+/* No entrance after a successful registration: the logo starts at rest. */
+[data-logo-intro='skip'] :is(.logo-roll-in, .logo-rock, .logo-lid, .logo-motion-line) {
+    animation: none;
+}
+
 /*
  * Replay on click/tap (resources/js/logo-replay.js): the mark accelerates off to the
  * right, mirroring the entrance's braking, with the bin, lid, and lines at rest. When the

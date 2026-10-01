@@ -40,6 +40,15 @@ class RegistrationTest extends TestCase
             ->assertDontSee('is-driving', false);
     }
 
+    public function test_logo_entrance_is_skipped_after_registering(): void
+    {
+        $this->get('/')->assertDontSee('data-logo-intro', false);
+
+        $this->withSession(['registered' => true])
+            ->get('/')
+            ->assertSee('data-logo-intro="skip"', false);
+    }
+
     public function test_logo_can_be_replayed_on_click(): void
     {
         $this->get('/')
