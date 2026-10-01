@@ -180,17 +180,17 @@
 }
 
 /*
- * Footer truck: parked with its body 25% of the way along the footer's top border
+ * Footer truck: parked with its body 50% of the way along the footer's top border
  * (cqw = % of its @container wrapper; the -16px skips the motion lines drawn in front of
  * the body). The first time the footer scrolls into view, resources/js/truck.js adds
  * .is-driving and it pulls away and drives off the right edge once.
  */
 .truck-drive {
-    translate: calc(25cqw - 16px) 0;
+    translate: calc(50cqw - 16px) 0;
 }
 
 .truck-drive.is-driving {
-    animation: truck-drive 8s ease-in forwards;
+    animation: truck-drive 5.5s ease-in forwards;
 }
 
 /* No motion lines while parked; they fade in once the truck has started to pull away. */
@@ -210,7 +210,7 @@
 
 @keyframes truck-drive {
     from {
-        translate: calc(25cqw - 16px) 0;
+        translate: calc(50cqw - 16px) 0;
     }
     to {
         translate: 100cqw 0;
