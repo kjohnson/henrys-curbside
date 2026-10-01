@@ -152,11 +152,34 @@
     }
 }
 
+/*
+ * Replay on click/tap (resources/js/logo-replay.js): the mark accelerates off to the
+ * right, mirroring the entrance's braking, with the bin, lid, and lines at rest. When the
+ * state is cleared, the entrance animations are re-applied and play again from the start.
+ */
+[data-logo-state='exit'] .logo-roll-in {
+    animation: logo-roll-out 0.7s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+[data-logo-state='exit'] :is(.logo-rock, .logo-lid, .logo-motion-line) {
+    animation: none;
+}
+
+@keyframes logo-roll-out {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(600px);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .logo-roll-in,
     .logo-rock,
     .logo-lid,
-    .logo-motion-line {
+    .logo-motion-line,
+    [data-logo-state='exit'] .logo-roll-in {
         animation: none;
     }
 }

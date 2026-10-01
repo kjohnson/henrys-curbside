@@ -6,7 +6,7 @@
                 @if (config('site.logo'))
                     <img src="{{ asset(config('site.logo')) }}" alt="{{ config('site.name') }}" class="w-40 sm:w-52 lg:w-[min(20rem,50vh)]">
                 @else
-                    <x-logo class="w-40 sm:w-52 lg:w-[min(20rem,50vh)]" />
+                    <x-logo class="w-40 cursor-pointer select-none [-webkit-tap-highlight-color:transparent] sm:w-52 lg:w-[min(20rem,50vh)]" data-logo-replay />
                 @endif
 
                 <p class="mt-8 text-2xl font-semibold tracking-tight sm:text-3xl">{{ config('site.tagline') }}</p>

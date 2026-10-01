@@ -33,6 +33,13 @@ class RegistrationTest extends TestCase
             ->assertSee('name="street"', false);
     }
 
+    public function test_logo_can_be_replayed_on_click(): void
+    {
+        $this->get('/')
+            ->assertSee('data-logo-replay', false)
+            ->assertSee('class="logo-roll-in"', false);
+    }
+
     public function test_landing_page_links_the_favicons(): void
     {
         $this->get('/')
