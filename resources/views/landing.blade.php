@@ -77,7 +77,12 @@
                 </section>
             </div>
 
-            <footer class="border-t border-brand-950/10 px-6 py-6 text-center text-sm text-brand-950/55">
+            <footer class="relative border-t border-brand-950/10 px-6 py-6 text-center text-sm text-brand-950/55">
+                {{-- Garbage truck driving along the footer's top border (see .truck-drive in app.css). --}}
+                <div class="pointer-events-none absolute inset-x-0 bottom-full @container h-8 overflow-hidden">
+                    <x-truck class="truck-drive absolute bottom-0 left-0 h-8 w-20" data-drive-when-visible />
+                </div>
+
                 &copy; {{ date('Y') }} {{ config('site.name') }} &middot;
                 <a href="mailto:{{ config('site.contact_email') }}" class="underline decoration-brand-950/20 underline-offset-2 hover:text-brand-900">{{ config('site.contact_email') }}</a>
             </footer>

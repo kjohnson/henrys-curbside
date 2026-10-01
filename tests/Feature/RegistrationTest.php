@@ -33,6 +33,13 @@ class RegistrationTest extends TestCase
             ->assertSee('name="street"', false);
     }
 
+    public function test_footer_truck_waits_to_drive_until_visible(): void
+    {
+        $this->get('/')
+            ->assertSee('data-drive-when-visible', false)
+            ->assertDontSee('is-driving', false);
+    }
+
     public function test_logo_can_be_replayed_on_click(): void
     {
         $this->get('/')
