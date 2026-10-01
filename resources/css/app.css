@@ -21,3 +21,142 @@
     background-image: url('../images/map-pattern.svg');
     background-size: 720px 720px;
 }
+
+/*
+ * Logo entrance. Units are the logo's SVG units.
+ *   0–0.5s    the mark rolls in at a steady speed (480 units in 0.5s = 960/s)
+ *   0.5–1.1s  it eases out over the last 120 units; the curve's starting slope
+ *             (0.96 / 0.2 = 4.8 = 960/s × 0.6s ÷ 120) matches the cruise speed, so there's no jolt
+ *   0.5s on   the bin rocks forward on its wheel as it brakes, then settles back
+ */
+.logo-roll-in {
+    animation: logo-roll-in 1.1s both;
+}
+
+.logo-rock {
+    transform-origin: 102px 126px; /* wheel centre */
+    animation: logo-rock 0.9s 0.5s both;
+}
+
+@keyframes logo-roll-in {
+    0% {
+        transform: translateX(-600px);
+        animation-timing-function: linear;
+    }
+    45.4545% {
+        /* 0.5s of 1.1s: braking starts */
+        transform: translateX(-120px);
+        animation-timing-function: cubic-bezier(0.2, 0.96, 0.4, 1);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/*
+ * As the bin tips forward, the lid swings down on its right side until it's parallel
+ * with the body (undoing its -7° tip), then reopens as the bin swings back. The pivot
+ * sits on the lid's centre line where a level lid keeps a uniform 4-unit gap above
+ * the body, so the gap never closes below 4 at any point in the motion.
+ */
+.logo-lid {
+    transform-origin: 93.43px 42px;
+    animation: logo-lid 0.9s 0.5s both; /* in step with .logo-rock */
+}
+
+@keyframes logo-lid {
+    0% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out;
+    }
+    45% {
+        transform: rotate(7deg);
+        animation-timing-function: ease-in-out;
+    }
+    85%,
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/*
+ * Motion lines. While the mark brakes (0.5–1.1s) they shorten from the left and fade
+ * out, their right ends tracking the rocking bin so the 12-unit gap holds. As the bin
+ * swings back and settles (1.1–1.4s) they fade back in at full length, finishing as
+ * the rock ends.
+ *   logo-lines-follow  mirrors .logo-rock's keyframes and easing; each line's --peak and
+ *                      --dip (set in the logo) are the bin edge's offsets at +14° and -2°
+ *   logo-lines-fade    same 0.9s from 0.5s as the rock: 66.67% = 1.1s
+ */
+.logo-motion-line {
+    animation:
+        logo-lines-follow 0.9s 0.5s both,
+        logo-lines-fade 0.9s 0.5s both;
+}
+
+@keyframes logo-lines-follow {
+    0% {
+        translate: 0;
+        animation-timing-function: ease-out;
+    }
+    45% {
+        translate: var(--peak);
+        animation-timing-function: ease-in-out;
+    }
+    80% {
+        translate: var(--dip);
+        animation-timing-function: ease-in-out;
+    }
+    100% {
+        translate: 0;
+    }
+}
+
+@keyframes logo-lines-fade {
+    0% {
+        stroke-dasharray: 1 2;
+        opacity: 1;
+        animation-timing-function: ease-out;
+    }
+    66.67% {
+        stroke-dasharray: 0.3 2;
+        opacity: 0;
+    }
+    66.68% {
+        /* back to full length while invisible */
+        stroke-dasharray: 1 2;
+        opacity: 0;
+        animation-timing-function: ease-in-out;
+    }
+    100% {
+        stroke-dasharray: 1 2;
+        opacity: 1;
+    }
+}
+
+@keyframes logo-rock {
+    0% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out;
+    }
+    45% {
+        transform: rotate(14deg);
+        animation-timing-function: ease-in-out;
+    }
+    80% {
+        transform: rotate(-2deg);
+        animation-timing-function: ease-in-out;
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logo-roll-in,
+    .logo-rock,
+    .logo-lid,
+    .logo-motion-line {
+        animation: none;
+    }
+}
