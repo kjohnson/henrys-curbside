@@ -9,8 +9,9 @@
                 @if (config('site.logo'))
                     <img src="{{ asset(config('site.logo')) }}" alt="{{ config('site.name') }}" class="w-40 sm:w-52 lg:w-[min(20rem,50vh)]">
                 @else
-                    {{-- Skip the entrance when returning from a successful registration. --}}
-                    <x-logo class="w-40 cursor-pointer select-none [-webkit-tap-highlight-color:transparent] sm:w-52 lg:w-[min(20rem,50vh)]" data-logo-replay :data-logo-intro="$returning ? 'skip' : null" />
+                    {{-- First page: the usual entrance. Second step (just submitted): starts at rest, then
+                         rolls out and back in. Final thank-you page: stays at rest. --}}
+                    <x-logo class="w-40 cursor-pointer select-none [-webkit-tap-highlight-color:transparent] sm:w-52 lg:w-[min(20rem,50vh)]" data-logo-replay :data-logo-intro="isset($contactFor) ? 'replay' : ($returning ? 'skip' : null)" />
                 @endif
 
                 <p class="mt-8 text-2xl font-semibold tracking-tight sm:text-3xl">{{ config('site.tagline') }}</p>
@@ -117,17 +118,19 @@
                 </section>
             </div>
 
-            <footer class="relative border-t border-brand-950/10 px-6 py-6 text-center text-sm text-brand-950/55">
-                {{-- On the final thank-you page only: a garbage truck driving along the footer's top
-                     border (see .truck-drive in app.css). --}}
-                @if (session('registered'))
-                    <div class="pointer-events-none absolute inset-x-0 bottom-full @container h-8 overflow-hidden">
+            <footer @class(['border-t border-brand-950/10 px-6 pt-6 text-center text-sm text-brand-950/55', 'pb-6' => $returning])>
+                <p>
+                    &copy; {{ date('Y') }} {{ config('site.name') }} &middot;
+                    <a href="mailto:{{ config('site.contact_email') }}" class="underline decoration-brand-950/20 underline-offset-2 hover:text-brand-900">{{ config('site.contact_email') }}</a>
+                </p>
+
+                {{-- First page only: a garbage truck along the very bottom of the page, driving off once
+                     it scrolls into view (see .truck-drive in app.css and resources/js/truck.js). --}}
+                @unless ($returning)
+                    <div class="pointer-events-none relative -mx-6 mt-4 @container h-8 overflow-hidden">
                         <x-truck class="truck-drive absolute bottom-0 left-0 h-8 w-20" data-drive-when-visible />
                     </div>
-                @endif
-
-                &copy; {{ date('Y') }} {{ config('site.name') }} &middot;
-                <a href="mailto:{{ config('site.contact_email') }}" class="underline decoration-brand-950/20 underline-offset-2 hover:text-brand-900">{{ config('site.contact_email') }}</a>
+                @endunless
             </footer>
         </main>
     </div>

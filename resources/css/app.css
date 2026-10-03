@@ -157,8 +157,11 @@
     display: none;
 }
 
-/* No entrance after a successful registration: the logo starts at rest. */
-[data-logo-intro='skip'] :is(.logo-roll-in, .logo-rock, .logo-lid, .logo-motion-line) {
+/*
+ * No entrance on load after a submission: the logo starts at rest. With "replay" (the
+ * second step), resources/js/logo-replay.js then rolls it out and back in.
+ */
+[data-logo-intro] :is(.logo-roll-in, .logo-rock, .logo-lid, .logo-motion-line) {
     animation: none;
 }
 

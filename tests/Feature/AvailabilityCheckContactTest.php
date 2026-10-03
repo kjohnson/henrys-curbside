@@ -41,7 +41,7 @@ class AvailabilityCheckContactTest extends TestCase
             ->assertSee('data-mask="us-phone"', false)
             ->assertDontSee('name="street"', false)
             ->assertDontSee('data-drive-when-visible', false)
-            ->assertSee('data-logo-intro="skip"', false);
+            ->assertSee('data-logo-intro="replay"', false);
     }
 
     public function test_the_form_posts_to_a_signed_url_with_the_same_expiry(): void

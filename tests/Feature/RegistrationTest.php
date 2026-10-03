@@ -43,16 +43,27 @@ class RegistrationTest extends TestCase
             ->assertDontSee('name="phone"', false);
     }
 
-    public function test_footer_truck_only_appears_on_the_final_thank_you_page(): void
+    public function test_footer_truck_only_appears_on_the_first_page(): void
     {
-        $this->get('/')->assertDontSee('data-drive-when-visible', false);
+        $this->get('/')
+            ->assertSee('data-drive-when-visible', false)
+            ->assertDontSee('is-driving', false);
 
         foreach ([false, true] as $contactSaved) {
             $this->withSession(['registered' => true, 'contact_saved' => $contactSaved])
                 ->get('/')
-                ->assertSee('data-drive-when-visible', false)
-                ->assertDontSee('is-driving', false);
+                ->assertDontSee('data-drive-when-visible', false);
         }
+    }
+
+    public function test_footer_truck_sits_at_the_very_bottom_of_the_page(): void
+    {
+        $html = $this->get('/')->getContent();
+
+        // The truck strip is the footer's last child, and the footer has no bottom padding.
+        $this->assertMatchesRegularExpression('/<footer class="[^"]*\bpt-6\b[^"]*">/', $html);
+        $this->assertDoesNotMatchRegularExpression('/<footer class="[^"]*\bpb-6\b/', $html);
+        $this->assertMatchesRegularExpression('/data-drive-when-visible[^>]*>.*?<\/svg>\s*<\/div>\s*<\/footer>/s', $html);
     }
 
     public function test_thank_you_page_says_we_will_let_you_know_when_contact_details_were_left(): void
@@ -69,7 +80,8 @@ class RegistrationTest extends TestCase
 
         $this->withSession(['registered' => true])
             ->get('/')
-            ->assertSee('data-logo-intro="skip"', false);
+            ->assertSee('data-logo-intro="skip"', false)
+            ->assertDontSee('data-logo-intro="replay"', false);
     }
 
     public function test_logo_can_be_replayed_on_click(): void
